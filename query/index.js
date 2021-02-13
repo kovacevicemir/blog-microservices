@@ -20,35 +20,49 @@ const posts = {};
 //   };
 
 app.get("/posts", (req, res) => {
-    res.send(posts);
+  res.send(posts);
 });
 
 app.post("/events", (req, res) => {
-    const {type,data} = req.body;
+  const { type, data } = req.body;
 
-    if(type === "PostCreated"){
-        const {id, title} = data;
-        posts[id] = {
-            id,
-            title,
-            comments:[]            
-        }
-    }
+  if (type === "PostCreated") {
+    const { id, title } = data;
+    posts[id] = {
+      id,
+      title,
+      comments: [],
+    };
+  }
 
-    if(type === "CommentCreated"){
-        const {id, content, postId} = data;
-        const post = posts[postId];
+  if (type === "CommentCreated") {
+    const { id, content, postId } = data;
+    const post = posts[postId];
 
-        post.comments.push({
-            id,
-            content,
-            postId
-        })
+    post.comments.push({
+      id,
+      content,
+      postId,
+      status:'pending'
+    });
 
-        posts[postId] = post;
-    }
+    posts[postId] = post;
+  }
 
-    res.send({});
+  if (type === "CommentUpdated") {
+    const { id, content, postId, status } = data;
+
+    const post = posts[postId];
+    const comment = post.comments.find((comment) => {
+      return comment.id === id;
+    });
+
+    comment.id = id
+    comment.status = status;
+    comment.content = content;
+  }
+
+  res.send({});
 });
 
 app.listen(4002, () => {
