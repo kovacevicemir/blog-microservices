@@ -52,12 +52,13 @@ app.post("/events", (req, res) => {
   if (type === "CommentUpdated") {
     const { id, content, postId, status } = data;
 
+    console.log('CommentUpdate data: ',data)
+
     const post = posts[postId];
     const comment = post.comments.find((comment) => {
       return comment.id === id;
     });
 
-    comment.id = id
     comment.status = status;
     comment.content = content;
   }
